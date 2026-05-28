@@ -1,0 +1,168 @@
+.request-builder {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #2e303a;
+  border-radius: 8px;
+  background: #1f2028;
+  color: #f3f4f6;
+  font: 14px/1.4 system-ui, sans-serif;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.row--url .input--url {
+  flex: 1;
+}
+
+.row--header {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 8px;
+}
+
+.row--load {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.row--actions {
+  justify-content: flex-start;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.field > span {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.input,
+.select,
+.textarea {
+  font: inherit;
+  padding: 8px 10px;
+  background: #16171d;
+  border: 1px solid #2e303a;
+  border-radius: 4px;
+  color: inherit;
+  outline: none;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  border-color: #c084fc;
+}
+
+.input:disabled,
+.select:disabled,
+.textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.textarea {
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 13px;
+  resize: vertical;
+}
+
+.fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: 1px solid #2e303a;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin: 0;
+}
+
+.fieldset > legend {
+  padding: 0 4px;
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+.btn {
+  font: inherit;
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn--primary {
+  background: #c084fc;
+  color: #16171d;
+  font-weight: 600;
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: #a855f7;
+}
+
+.btn--danger {
+  background: #ef4444;
+  color: #fff;
+  font-weight: 600;
+}
+
+.btn--danger:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+.btn--ghost {
+  background: transparent;
+  color: #c084fc;
+  border-color: #2e303a;
+  align-self: flex-start;
+}
+
+.btn--ghost:hover:not(:disabled) {
+  background: #2e303a;
+}
+
+.btn--icon {
+  background: transparent;
+  color: #9ca3af;
+  border-color: #2e303a;
+  width: 32px;
+  padding: 0;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.btn--icon:hover:not(:disabled) {
+  background: #2e303a;
+  color: #ef4444;
+}
+
+.error {
+  color: #ef4444;
+  font-size: 12px;
+}
+
+.status {
+  color: #9ca3af;
+  font-size: 13px;
+}

@@ -1,0 +1,78 @@
+.log {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #2e303a;
+  border-radius: 8px;
+  background: #1f2028;
+  overflow: hidden;
+  /* Фиксированная высота — обязательна для виртуализации,
+     иначе react-window не знает, сколько строк рендерить */
+  height: 360px;
+}
+
+.log__header,
+.log__row {
+  display: grid;
+  grid-template-columns: 120px 80px 90px 1fr;
+  gap: 8px;
+  padding: 4px 12px;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 12px;
+  align-items: center;
+}
+
+.log__header {
+  background: #16171d;
+  color: #9ca3af;
+  font-weight: 600;
+  border-bottom: 1px solid #2e303a;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.log__list {
+  flex: 1;
+  min-height: 0; /* чтобы flex-child мог shrink'нуться и list скроллился */
+}
+
+.log__row {
+  border-bottom: 1px solid #2e303a;
+  color: #f3f4f6;
+}
+
+.log__status {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.log__status--ok {
+  color: #4ade80;
+}
+
+.log__status--warn {
+  color: #facc15;
+}
+
+.log__status--error {
+  color: #ef4444;
+}
+
+.log__latency {
+  color: #9ca3af;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.log__error {
+  color: #ef4444;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.log__empty {
+  padding: 32px;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 14px;
+}
