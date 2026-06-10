@@ -1,5 +1,3 @@
-// src/workers/requestWorker.ts
-
 import type {
   WorkerInMessage,
   WorkerOutMessage,
@@ -8,9 +6,6 @@ import type {
   HttpMethod,
 } from '../types'
 
-// Дублирует константу из formDataToConfig — на этой стороне нет доступа
-// к импорту через ../components/... (worker — это другой граф зависимостей,
-// тащить React-компоненты сюда нельзя). Минимальное дублирование оправдано.
 const METHODS_WITH_BODY: ReadonlyArray<HttpMethod> = ['POST', 'PUT', 'PATCH']
 
 const BATCH_SIZE = 50
@@ -45,15 +40,6 @@ self.onmessage = async (e: MessageEvent<WorkerInMessage>) => {
   const { config } = e.data
   let remaining = config.totalRequests
 
-  // Async-пул: создаём N "корутин" (на самом деле обычных async-функций
-  // в общем event loop'е worker'а). Каждая в цикле выгребает следующую задачу
-  // из общего счётчика remaining и дёргает fetch.
-  //
-  // Race condition'а на remaining-- нет: JS однопоточный, между чтением,
-  // декрементом и записью не может вклиниться другая корутина.
-  // Другая корутина получит управление только на await runRequest(...).
-  //
-  // Promise.all ждёт, пока все N корутин не закончат свой while.
   await Promise.all(
     Array.from({ length: config.concurrency }, async () => {
       while (remaining > 0) {
@@ -73,7 +59,6 @@ self.onmessage = async (e: MessageEvent<WorkerInMessage>) => {
 async function runRequest(config: RequestConfig): Promise<RequestResult> {
   const start = performance.now()
   try {
-    // Страховка от GET/DELETE с body — fetch иначе бросит TypeError
     const canHaveBody = METHODS_WITH_BODY.includes(config.method)
     const res = await fetch(config.url, {
       method: config.method,

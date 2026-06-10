@@ -14,20 +14,10 @@ export function Metrics() {
   const results = useResultsStore(s => s.results)
   const total = useConfigStore(s => s.config?.totalRequests)
 
-  // useDeferredValue говорит React: рендери эти данные с низким приоритетом.
-  // Если апдейты приходят чаще, чем успеваем рисовать (245 RPS → 245 апдейтов/сек),
-  // React пропустит промежуточные. UI остаётся отзывчивым, форма не лагает.
   const deferredResults = useDeferredValue(results)
 
-  // calcStats теперь считается ЗДЕСЬ, а не в сторе.
-  // useMemo — чтобы не пересчитывать, если deferredResults тот же объект.
-  // Поскольку Metrics рендерится только когда useDeferredValue решит "пора"
-  // (а не на каждый push в стор), мы вызываем calcStats в разы реже,
-  // чем приходят запросы. Главное — main thread не блокируется на каждый result.
   const deferredStats = useMemo(() => calcStats(deferredResults, total), [deferredResults, total])
 
-  // Берём последние N результатов для графика, мемоизируем.
-  // index здесь — порядковый номер в окне, не в общем массиве.
   const chartData = useMemo(
     () =>
       deferredResults.slice(-CHART_WINDOW).map((r, i) => ({
@@ -70,8 +60,6 @@ export function Metrics() {
             <Tooltip
               contentStyle={{ background: '#1f2028', border: '1px solid #2e303a' }}
               labelStyle={{ color: '#9ca3af' }}
-              // Recharts даёт value как ValueType (может быть undefined/массивом),
-              // приводим к строке безопасно
               formatter={value => [`${value} ms`, 'latency']}
             />
             <Line

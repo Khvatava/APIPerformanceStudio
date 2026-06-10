@@ -1,5 +1,3 @@
-// src/hooks/useLoadRunner.ts
-
 import { useCallback, useEffect, useRef } from 'react'
 import type { RequestConfig, WorkerOutMessage } from '../types'
 import { useResultsStore } from '../store/resultsStore'
@@ -11,8 +9,6 @@ export function useLoadRunner() {
   const addResults = useResultsStore(s => s.addResults)
   const setStatus = useConfigStore(s => s.setStatus)
 
-  // Cleanup при размонтировании: терминируем worker, чтобы не оставлять
-  // фоновую активность после ухода со страницы / hot-reload.
   useEffect(() => {
     return () => {
       workerRef.current?.terminate()
@@ -23,9 +19,6 @@ export function useLoadRunner() {
   const start = useCallback(
     (config: RequestConfig) => {
       workerRef.current?.terminate()
-
-      // Создаём свежий worker. Vite видит этот паттерн (new Worker + new URL
-      // с import.meta.url) и бандлит requestWorker.ts отдельным worker-чанком.
       const worker = new Worker(new URL('../workers/requestWorker.ts', import.meta.url), {
         type: 'module',
       })

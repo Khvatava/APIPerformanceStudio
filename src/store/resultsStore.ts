@@ -1,4 +1,3 @@
-// src/store/resultsStore.ts
 import { create } from 'zustand'
 import type { RequestResult } from '../types'
 

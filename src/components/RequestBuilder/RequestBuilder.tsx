@@ -1,4 +1,3 @@
-// src/components/RequestBuilder/RequestBuilder.tsx
 import { useForm, useFieldArray, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { HTTP_METHODS, LIMITS, requestSchema, type RequestFormData } from './schema'
@@ -8,7 +7,6 @@ import { useResultsStore } from '../../store/resultsStore'
 import { useLoadRunner } from '../../hooks/useLoadRunner'
 import './RequestBuilder.css'
 
-// Методы, у которых тело запроса осмысленно. У GET/DELETE его обычно нет.
 const METHODS_WITH_BODY: ReadonlyArray<RequestFormData['method']> = ['POST', 'PUT', 'PATCH']
 
 export function RequestBuilder() {
@@ -30,9 +28,6 @@ export function RequestBuilder() {
     },
   })
 
-  // useFieldArray даёт стабильный field.id для React-key —
-  // он не меняется, когда юзер редактирует key/value внутри строки,
-  // поэтому фокус инпута не теряется при перерендере.
   const { fields, append, remove } = useFieldArray({ control, name: 'headers' })
 
   const setConfig = useConfigStore(s => s.setConfig)
@@ -40,8 +35,6 @@ export function RequestBuilder() {
   const clearResults = useResultsStore(s => s.clearResults)
   const { start, stop } = useLoadRunner()
 
-  // useWatch вместо watch() — он совместим с React Compiler.
-  // Подписываемся точечно на поле method, чтобы показывать/скрывать body.
   const method = useWatch({ control, name: 'method' })
   const showBody = METHODS_WITH_BODY.includes(method)
 
@@ -52,14 +45,13 @@ export function RequestBuilder() {
 
     const config = formDataToConfig(data)
     setConfig(config)
-    clearResults() // новый прогон — забываем результаты предыдущего
+    clearResults() 
     start(config)
   }
 
   return (
     <form className="request-builder" onSubmit={handleSubmit(onSubmit)}>
       <div className="row row--url">
-        {/* method и url в одну строку, как в Postman */}
         <select className="select" {...register('method')} disabled={isRunning}>
           {HTTP_METHODS.map(m => (
             <option key={m} value={m}>
@@ -118,8 +110,6 @@ export function RequestBuilder() {
         <label className="field">
           <span className="field__label-row">
             Body
-            {/* Чекбокс рядом с лейблом — компактно, не съедает отдельную строку.
-                Когда включён, zod-схема парсит body через JSON.parse и подсвечивает ошибку. */}
             <span className="checkbox">
               <input type="checkbox" {...register('bodyIsJson')} disabled={isRunning} />
               JSON
@@ -144,8 +134,6 @@ export function RequestBuilder() {
             type="number"
             min={LIMITS.concurrency.min}
             max={LIMITS.concurrency.max}
-            // valueAsNumber — RHF преобразует string из input в number,
-            // иначе zod увидит строку и ругнётся на тип.
             {...register('concurrency', { valueAsNumber: true })}
             disabled={isRunning}
           />
@@ -166,25 +154,10 @@ export function RequestBuilder() {
       </div>
 
       <div className="row row--actions">
-        {/*
-          Рендерим обе кнопки всегда, дисэйблим неактивную.
-          Почему НЕ через {cond ? <button A> : <button B>}:
-          React видит две <button> в одной JSX-позиции и переиспользует
-          ОДИН DOM-элемент, меняя ему type с "button" на "submit". Если в этот
-          момент в обработчике клика zustand синхронно обновляет состояние,
-          DOM мутируется ДО того, как браузер решит "сабмитить ли форму",
-          и клик по Stop превращается в submit формы.
-          Две отдельные <button> в JSX → два отдельных DOM-узла → клик
-          по Stop остаётся кликом по Stop.
-
-          Дополнительно e.preventDefault() в onClick — страховка на случай,
-          если что-то ещё попытается превратить клик в submit.
-        */}
         <button
           type="submit"
           className="btn btn--primary"
           disabled={isRunning}
-          // hidden убирает кнопку с layout'а — визуально показывается только одна
           hidden={isRunning}
         >
           Start

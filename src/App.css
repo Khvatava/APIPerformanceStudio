@@ -23,10 +23,9 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  min-width: 0; /* без этого grid-child может вылезать за пределы колонки */
+  min-width: 0;
 }
 
-/* На узких экранах — одна колонка */
 @media (max-width: 900px) {
   .app__grid {
     grid-template-columns: 1fr;

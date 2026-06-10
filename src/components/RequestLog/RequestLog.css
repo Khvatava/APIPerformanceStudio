@@ -5,8 +5,6 @@
   border-radius: 8px;
   background: #1f2028;
   overflow: hidden;
-  /* Фиксированная высота — обязательна для виртуализации,
-     иначе react-window не знает, сколько строк рендерить */
   height: 360px;
 }
 
@@ -32,7 +30,7 @@
 
 .log__list {
   flex: 1;
-  min-height: 0; /* чтобы flex-child мог shrink'нуться и list скроллился */
+  min-height: 0; 
 }
 
 .log__row {

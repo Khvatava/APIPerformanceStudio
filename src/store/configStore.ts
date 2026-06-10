@@ -8,7 +8,6 @@ interface ConfigStore {
   setStatus: (status: RunStatus) => void
 }
 
-// Создавай стор с явной типизацией через дженерик
 export const useConfigStore = create<ConfigStore>()(set => ({
   config: null,
   status: 'idle',
