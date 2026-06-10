@@ -13,14 +13,6 @@ import type {
 // тащить React-компоненты сюда нельзя). Минимальное дублирование оправдано.
 const METHODS_WITH_BODY: ReadonlyArray<HttpMethod> = ['POST', 'PUT', 'PATCH']
 
-// Батчинг: вместо postMessage на каждый результат копим в буфер и шлём пачкой.
-// Зачем: каждое сообщение из worker'а триггерит set() в zustand-сторе,
-// а тот делает [...state.results, result] — O(n) копирование. При 10k запросах
-// это O(n²) суммарно. Батчинг превращает это в O(n²/BATCH_SIZE).
-// Плюс снижается overhead самого postMessage (structured clone тоже не бесплатный).
-//
-// Flush триггерится либо по размеру (быстрая нагрузка — не ждём таймер),
-// либо по таймеру (медленная — не держим юзера без апдейтов).
 const BATCH_SIZE = 50
 const BATCH_INTERVAL_MS = 100
 
@@ -72,11 +64,8 @@ self.onmessage = async (e: MessageEvent<WorkerInMessage>) => {
     }),
   )
 
-  // Дослать остатки буфера ДО DONE, иначе последняя неполная пачка потеряется.
   flush()
 
-  // Когда все задачи выполнены, сигналим main thread'у — он переведёт
-  // статус в 'completed'.
   const done: WorkerOutMessage = { type: 'DONE' }
   self.postMessage(done)
 }

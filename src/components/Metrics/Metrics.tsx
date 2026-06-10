@@ -43,6 +43,11 @@ export function Metrics() {
         <Stat label="Выполнено" value={`${deferredStats.completed} / ${deferredStats.total}`} />
         <Stat label="RPS" value={deferredStats.rps.toFixed(1)} />
         <Stat
+          label="Редиректы"
+          value={`${deferredStats.redirectRate.toFixed(1)}%`}
+          tone={deferredStats.redirectRate > 0 ? 'warn' : 'ok'}
+        />
+        <Stat
           label="Ошибки"
           value={`${deferredStats.errorRate.toFixed(1)}%`}
           tone={deferredStats.errorRate > 0 ? 'bad' : 'ok'}
@@ -84,7 +89,15 @@ export function Metrics() {
   )
 }
 
-function Stat({ label, value, tone }: { label: string; value: string; tone?: 'ok' | 'bad' }) {
+function Stat({
+  label,
+  value,
+  tone,
+}: {
+  label: string
+  value: string
+  tone?: 'ok' | 'bad' | 'warn'
+}) {
   return (
     <div className={`stat ${tone ? `stat--${tone}` : ''}`}>
       <div className="stat__label">{label}</div>

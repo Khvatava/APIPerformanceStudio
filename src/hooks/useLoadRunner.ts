@@ -1,14 +1,11 @@
-// src/hooks/useWorkerPool.ts
-// Тонкая обёртка над одним Worker'ом: создаёт его, шлёт RUN, слушает RESULT/DONE,
-// пишет в стор. Всю реальную нагрузку (concurrency, очередь, fetch'и) держит
-// сам Worker — см. workers/requestWorker.ts.
+// src/hooks/useLoadRunner.ts
 
 import { useCallback, useEffect, useRef } from 'react'
 import type { RequestConfig, WorkerOutMessage } from '../types'
 import { useResultsStore } from '../store/resultsStore'
 import { useConfigStore } from '../store/configStore'
 
-export function useWorkerPool() {
+export function useLoadRunner() {
   const workerRef = useRef<Worker | null>(null)
 
   const addResults = useResultsStore(s => s.addResults)

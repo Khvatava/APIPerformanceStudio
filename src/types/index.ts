@@ -3,7 +3,9 @@ import type { RequestFormData } from '../components/RequestBuilder/schema'
 
 export type HttpMethod = RequestFormData['method']
 
-export type RequestConfig = Omit<RequestFormData, 'headers'> & {
+// bodyIsJson — флаг формы для валидации, в config'е он не нужен:
+// worker всё равно шлёт body как строку.
+export type RequestConfig = Omit<RequestFormData, 'headers' | 'bodyIsJson'> & {
   headers: Record<string, string>
 }
 
@@ -22,7 +24,15 @@ export interface RunStats {
   p95: number
   p99: number
   rps: number // requests per second
+  // Классификация статусов:
+  //   2xx          → ok (в долях не показываем явно — это "всё остальное")
+  //   3xx          → redirectRate (warn: fetch обычно сам следует, попадание 3xx сюда = аномалия)
+  //   4xx/5xx/0    → errorRate
+  // Разделение нужно, чтобы то, что лог подсвечивает жёлтым (warn), было
+  // отражено и числом в метриках — иначе юзер видит warn в логе и не понимает,
+  // почему "Ошибки = 0%".
   errorRate: number // 0–100 процентов
+  redirectRate: number // 0–100 процентов
   completed: number
   total: number
 }

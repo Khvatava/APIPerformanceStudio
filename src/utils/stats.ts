@@ -3,11 +3,26 @@ import type { RequestResult, RunStats } from '../types'
 
 export function calcStats(results: RequestResult[], total = 0): RunStats {
   if (results.length === 0) {
-    return { avg: 0, min: 0, max: 0, p95: 0, p99: 0, rps: 0, errorRate: 0, completed: 0, total }
+    return {
+      avg: 0,
+      min: 0,
+      max: 0,
+      p95: 0,
+      p99: 0,
+      rps: 0,
+      errorRate: 0,
+      redirectRate: 0,
+      completed: 0,
+      total,
+    }
   }
 
   const latencies = results.map(r => r.latency).sort((a, b) => a - b)
+  // 3xx — НЕ ошибка (fetch обычно сам следует за редиректом, поэтому 3xx
+  // в res.status — редкое явление; но если оно случилось, отметим отдельно).
+  // 0 — network error (fetch выбросил), сюда же 4xx/5xx.
   const errors = results.filter(r => r.status === 0 || r.status >= 400)
+  const redirects = results.filter(r => r.status >= 300 && r.status < 400)
   const sum = latencies.reduce((a, b) => a + b, 0)
 
   const p95idx = Math.floor(latencies.length * 0.95)
@@ -26,6 +41,7 @@ export function calcStats(results: RequestResult[], total = 0): RunStats {
     p99: latencies[p99idx] ?? latencies[latencies.length - 1],
     rps: Math.round(rps * 10) / 10,
     errorRate: Math.round((errors.length / results.length) * 1000) / 10,
+    redirectRate: Math.round((redirects.length / results.length) * 1000) / 10,
     completed: results.length,
     total: total || results.length, // fallback на completed, если total не передан
   }

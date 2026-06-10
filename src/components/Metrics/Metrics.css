@@ -50,3 +50,8 @@
 .stat--ok .stat__value {
   color: #4ade80;
 }
+
+/* Тот же тон, что у 3xx в логе — для визуальной консистентности */
+.stat--warn .stat__value {
+  color: #facc15;
+}

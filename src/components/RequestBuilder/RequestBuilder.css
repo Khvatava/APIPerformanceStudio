@@ -50,6 +50,27 @@
   color: #9ca3af;
 }
 
+/* Лейбл с инлайн-контролом справа (например, чекбоксом "JSON" возле Body) */
+.field__label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  /* Тон такой же, как у обычной field-подписи */
+  color: #9ca3af;
+}
+
+.checkbox input {
+  accent-color: #c084fc;
+  cursor: pointer;
+}
+
 .input,
 .select,
 .textarea {

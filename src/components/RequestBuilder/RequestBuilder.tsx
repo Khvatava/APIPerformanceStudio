@@ -5,7 +5,7 @@ import { HTTP_METHODS, LIMITS, requestSchema, type RequestFormData } from './sch
 import { formDataToConfig } from '../../utils/formDataToConfig'
 import { useConfigStore } from '../../store/configStore'
 import { useResultsStore } from '../../store/resultsStore'
-import { useWorkerPool } from '../../hooks/useWorkerPool'
+import { useLoadRunner } from '../../hooks/useLoadRunner'
 import './RequestBuilder.css'
 
 // Методы, у которых тело запроса осмысленно. У GET/DELETE его обычно нет.
@@ -24,6 +24,7 @@ export function RequestBuilder() {
       method: 'GET',
       headers: [],
       body: '',
+      bodyIsJson: false,
       concurrency: 10,
       totalRequests: 100,
     },
@@ -37,7 +38,7 @@ export function RequestBuilder() {
   const setConfig = useConfigStore(s => s.setConfig)
   const status = useConfigStore(s => s.status)
   const clearResults = useResultsStore(s => s.clearResults)
-  const { start, stop } = useWorkerPool()
+  const { start, stop } = useLoadRunner()
 
   // useWatch вместо watch() — он совместим с React Compiler.
   // Подписываемся точечно на поле method, чтобы показывать/скрывать body.
@@ -115,7 +116,15 @@ export function RequestBuilder() {
 
       {showBody && (
         <label className="field">
-          <span>Body</span>
+          <span className="field__label-row">
+            Body
+            {/* Чекбокс рядом с лейблом — компактно, не съедает отдельную строку.
+                Когда включён, zod-схема парсит body через JSON.parse и подсвечивает ошибку. */}
+            <span className="checkbox">
+              <input type="checkbox" {...register('bodyIsJson')} disabled={isRunning} />
+              JSON
+            </span>
+          </span>
           <textarea
             className="textarea"
             rows={6}
@@ -123,6 +132,7 @@ export function RequestBuilder() {
             {...register('body')}
             disabled={isRunning}
           />
+          {errors.body && <span className="error">{errors.body.message}</span>}
         </label>
       )}
 

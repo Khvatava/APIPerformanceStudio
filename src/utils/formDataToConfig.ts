@@ -22,12 +22,16 @@ export function formDataToConfig(data: RequestFormData): RequestConfig {
   const allowsBody = METHODS_WITH_BODY.includes(data.method)
   const trimmedBody = data.body?.trim()
 
+  // bodyIsJson — поле формы, не часть RequestConfig. Деструктурируем, чтобы оно
+  // не утекло в worker через ...rest.
+  const { bodyIsJson: _bodyIsJson, headers, ...rest } = data
+
   return {
-    ...data,
+    ...rest,
     // undefined → поле просто не уйдёт в fetch (вместо пустой строки '')
     body: allowsBody && trimmedBody ? data.body : undefined,
     headers: Object.fromEntries(
-      data.headers.filter(h => h.key.trim() !== '').map(h => [h.key, h.value]),
+      headers.filter(h => h.key.trim() !== '').map(h => [h.key, h.value]),
     ),
   }
 }
